@@ -9,7 +9,7 @@ public class ConsumerSMS {
 
     private static String QUEUE_SMS = "hello-inform-sms";
 
-    private static String EXCHANGE_FANOUT_INFORM = "hello-fanout-sms";
+    private static String EXCHANGE_FANOUT_INFORM = "hello-fanout-inform";
 
     public static void main(String[] args) {
         ConnectionFactory factory = new ConnectionFactory();
