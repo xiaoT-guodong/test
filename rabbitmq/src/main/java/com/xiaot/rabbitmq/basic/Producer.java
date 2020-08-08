@@ -1,4 +1,4 @@
-package com.xiaot.rabbitmq.producer;
+package com.xiaot.rabbitmq.basic;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
