@@ -1,0 +1,51 @@
+package com.xiaot.rabbitmq.topic;
+
+import com.rabbitmq.client.BuiltinExchangeType;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
+public class Producer {
+
+    private static final String EXCHANGE_TOPIC_INFORM = "hello-topic-inform";
+
+    private static final String QUEUE_INFORM_EMAIL = "hello-inform-email";
+    private static final String QUEUE_INFORM_SMS = "hello-inform-sms";
+
+    // # 匹配多个词, * 匹配一个词, 以"."分隔
+    private static final String ROUTING_KEY_EMAIL = "inform.#.email.#";
+    private static final String ROUTING_KEY_SMS = "inform.#.sms.#";
+
+    public static void main(String[] args) {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setVirtualHost("/");
+        factory.setHost("127.0.0.1");
+        factory.setPort(5672);
+        factory.setUsername("guest");
+        factory.setPassword("guest");
+        try (Connection connection = factory.newConnection()) {
+            Channel channel = connection.createChannel();
+
+            channel.exchangeDeclare(EXCHANGE_TOPIC_INFORM, BuiltinExchangeType.TOPIC);
+
+            channel.queueDeclare(QUEUE_INFORM_EMAIL, true, false, false, null);
+            channel.queueDeclare(QUEUE_INFORM_SMS, true, false, false, null);
+
+            channel.queueBind(QUEUE_INFORM_EMAIL, EXCHANGE_TOPIC_INFORM, ROUTING_KEY_EMAIL);
+            channel.queueBind(QUEUE_INFORM_SMS, EXCHANGE_TOPIC_INFORM, ROUTING_KEY_SMS);
+
+            channel.basicPublish(EXCHANGE_TOPIC_INFORM, "inform.email", null, "Email message.".getBytes());
+            channel.basicPublish(EXCHANGE_TOPIC_INFORM, "inform.sms", null, "SMS message.".getBytes());
+            channel.basicPublish(EXCHANGE_TOPIC_INFORM, "inform.sms", null, "SMS message.".getBytes());
+            channel.basicPublish(EXCHANGE_TOPIC_INFORM, "inform.email.sms", null, "Email and SMS message.".getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
