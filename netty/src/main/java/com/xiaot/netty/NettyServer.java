@@ -27,6 +27,7 @@ public class NettyServer {
                         }
                     });
             ChannelFuture cf = serverBootstrap.bind(6668).sync();
+            System.out.println("Server start finished.");
             cf.channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
